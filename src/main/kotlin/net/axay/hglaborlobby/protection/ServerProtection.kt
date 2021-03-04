@@ -28,15 +28,8 @@ object ServerProtection {
             GeneralProtectionUtils.checkPlayerAction(it)
         }
 
-        listen<PlayerInteractAtEntityEvent> {
-            if (it.rightClicked is ArmorStand || it.rightClicked is ItemFrame)
-                if (it.player.gameMode.isRestricted)
-                    it.isCancelled = true
-        }
-
         listen<PlayerArmorStandManipulateEvent> {
-            if (it.player.gameMode.isRestricted)
-                it.isCancelled = true
+            GeneralProtectionUtils.checkPlayerAction(it)
         }
 
         listen<EntityDamageEvent> {
@@ -101,7 +94,7 @@ object ServerProtection {
         }
 
         listen<PlayerDropItemEvent> {
-            if (it.isDamagerTrash)
+            if (it.player.isInDamager)
                 it.itemDrop.remove()
             else if (it.itemDrop.itemStack.isLobbyItem)
                 GeneralProtectionUtils.checkPlayerAction(it)

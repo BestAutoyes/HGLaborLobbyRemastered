@@ -31,6 +31,24 @@ object LobbyItems {
             mark("maingui")
         }
 
+        contents[3] = itemStack(Material.NETHER_STAR) {
+            meta {
+                name = "${KColors.CORAL}Server Warps"
+                lore = "Rechtsklicke dieses Item, um die Server Warps zu sehen."
+                    .toLoreList(KColors.CHARTREUSE)
+            }
+            mark("serverwarps")
+        }
+
+        contents[5] = itemStack(Material.DIAMOND) {
+            meta {
+                name = "${KColors.CORAL}HG Queue"
+                lore = "Rechtsklicke dieses Item, um die HG Queue zu öffnen."
+                    .toLoreList(KColors.CHARTREUSE)
+            }
+            mark("hgqueue")
+        }
+
         val playerInv = player.inventory
         contents.forEach { (index, item) ->
             item.makeLobbyItem()
