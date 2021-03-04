@@ -28,6 +28,10 @@ object ServerProtection {
             GeneralProtectionUtils.checkPlayerAction(it)
         }
 
+        listen<PlayerInteractAtEntityEvent> {
+            GeneralProtectionUtils.checkPlayerAction(it)
+        }
+
         listen<PlayerArmorStandManipulateEvent> {
             GeneralProtectionUtils.checkPlayerAction(it)
         }
