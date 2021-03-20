@@ -47,6 +47,12 @@ dependencies {
     // KMONGO and MONGODB
     compileOnly("org.litote.kmongo", "kmongo-core", "4.2.3")
     compileOnly("org.litote.kmongo", "kmongo-serialization-mapping", "4.2.3")
+
+    // HGLABORUTILS
+    implementation("de.hglabor:hglabor-utils:0.0.5")
+
+    // REDIS
+    implementation("redis.clients:jedis:3.5.1");
 }
 
 /*
