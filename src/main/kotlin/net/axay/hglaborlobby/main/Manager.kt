@@ -1,6 +1,9 @@
 package net.axay.hglaborlobby.main
 
+import de.hglabor.utils.noriskutils.jedis.JChannels
+import de.hglabor.utils.noriskutils.jedis.JedisUtils
 import net.axay.hglaborlobby.chat.ChatFormatter
+import net.axay.hglaborlobby.config.ConfigManager
 import net.axay.hglaborlobby.damager.DamageCommand
 import net.axay.hglaborlobby.damager.Damager
 import net.axay.hglaborlobby.data.database.ServerWarpPluginMessageListener
@@ -9,12 +12,13 @@ import net.axay.hglaborlobby.database.DatabaseManager
 import net.axay.hglaborlobby.eventmanager.joinserver.OnJoinManager
 import net.axay.hglaborlobby.eventmanager.leaveserver.KickMessageListener
 import net.axay.hglaborlobby.eventmanager.leaveserver.OnLeaveManager
+import net.axay.hglaborlobby.functionality.ElytraLauncher
 import net.axay.hglaborlobby.functionality.LobbyItems
 import net.axay.hglaborlobby.functionality.SoupHealing
 import net.axay.hglaborlobby.gui.guis.*
 import net.axay.hglaborlobby.hgqueue.HGInformationListener
+import net.axay.hglaborlobby.hgqueue.HGInformationListenerV2
 import net.axay.hglaborlobby.hgqueue.HG_QUEUE
-import net.axay.hglaborlobby.functionality.ElytraLauncher
 import net.axay.hglaborlobby.protection.ServerProtection
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.broadcast
@@ -43,6 +47,7 @@ class InternalMainClass : KSpigot() {
     }
 
     override fun startup() {
+        ConfigManager.enable()
 
         ServerProtection.enable()
 
@@ -70,13 +75,15 @@ class InternalMainClass : KSpigot() {
         //PrivacySettingsGUI.enable()
 
         server.messenger.registerIncomingPluginChannel(
-            this,
-            StandardMessenger.validateAndCorrectChannel("hglabor:hginformation"),
-            HGInformationListener
+                this,
+                StandardMessenger.validateAndCorrectChannel("hglabor:hginformation"),
+                HGInformationListener
         )
         server.messenger.registerOutgoingPluginChannel(this, HG_QUEUE)
         server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
         server.messenger.registerIncomingPluginChannel(this, "BungeeCord", ServerWarpPluginMessageListener)
+        JedisUtils.init(ConfigManager.getString("redispw"))
+        JedisUtils.subscribe(HGInformationListenerV2, JChannels.HGQUEUE_INFO)
 
         broadcast("${KColors.MEDIUMSPRINGGREEN}-> ENABLED PLUGIN")
         onlinePlayers.forEach { it.sound(Sound.BLOCK_BEACON_ACTIVATE) }
@@ -90,6 +97,7 @@ class InternalMainClass : KSpigot() {
         console.info("Shutting down Lobby plugin...")
 
         DatabaseManager.mongoDB.close()
+        JedisUtils.closePool()
 
         broadcast("${KColors.TOMATO}-> DISABLING PLUGIN ${KColors.DARKGRAY}(maybe a reload)")
         onlinePlayers.forEach { it.sound(Sound.BLOCK_BEACON_DEACTIVATE) }
